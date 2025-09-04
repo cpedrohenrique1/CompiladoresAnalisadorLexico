@@ -4,13 +4,17 @@ using namespace std;
 
 #include "utils/Arquivo.h"
 
-int main()
+int main(int argc, char* argv[])
 {
     try
     {
-        cout << "Escolha qual o arquivo a ser analisado: ";
         string nomeArquivo;
-        cin >> nomeArquivo;
+        if (argc == 1){
+            cout << "Escolha qual o arquivo a ser analisado: ";
+            cin >> nomeArquivo;
+        } else {
+            nomeArquivo = argv[1];
+        }
         Arquivo arquivo(nomeArquivo, new fstream());
         arquivo.lerArquivo();
     } catch(string e){
