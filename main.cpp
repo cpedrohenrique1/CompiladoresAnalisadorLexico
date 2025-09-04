@@ -2,7 +2,7 @@
 #include <fstream>
 using namespace std;
 
-#include "Arquivo.h"
+#include "utils/Arquivo.h"
 
 int main()
 {

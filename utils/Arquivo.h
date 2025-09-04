@@ -13,17 +13,17 @@ class Arquivo
 private:
     fstream *arquivo;
     AnalisadorLexico *analisadorLexico;
-    void abrirArquivo(string nomeArquivo);
+    void abrirArquivo(string& nomeArquivo);
     void fecharArquivo();
-    void escreverNoArquivo(string dados);
+    void escreverNoArquivo(string& dados);
 
 public:
     void lerArquivo();
-    Arquivo(string nomeArquivo, fstream *arquivo);
+    Arquivo(string& nomeArquivo, fstream *arquivo);
     ~Arquivo();
 };
 
-Arquivo::Arquivo(string nomeArquivo, fstream *arquivo)
+Arquivo::Arquivo(string& nomeArquivo, fstream *arquivo)
 {
     if (!arquivo)
     {
@@ -43,7 +43,7 @@ Arquivo::~Arquivo()
     this->analisadorLexico = NULL;
 }
 
-void Arquivo::abrirArquivo(string nomeArquivo)
+void Arquivo::abrirArquivo(string& nomeArquivo)
 {
     this->arquivo->open(nomeArquivo, std::ios::in);
     if (!this->arquivo->is_open())
