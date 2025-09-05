@@ -5,9 +5,16 @@
 using std::string;
 #include "StringManipulate.h"
 
+/**
+    Classe responsavel por realizar a analise lexica do codigo fonte.
+*/
 class AnalisadorLexico
 {
 public:
+    /*
+        Métodos estáticos para reconhecer comentários em linhas de código.
+        Cada método recebe uma string (linha de código) e retorna a posição do comentário ou um booleano indicando a presença de um comentário.
+    */
     int static reconhecerComentariosSimples(string &line)
     {
         return line.find("//");

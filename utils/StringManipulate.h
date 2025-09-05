@@ -6,9 +6,14 @@ using std::string;
 #include <list>
 #include <string>
 #include <set>
-
+/**
+    Classe para manipulação de strings e verificação de espaços em branco
+*/
 class StringManipulate {
     public:
+        /*
+          Função para remover determinado caracter de uma string
+         */
         static std::list<string> trim(const string &str, const char &charToTrim, const int& indexLine){
             std::list<string> parts;
             int lastIndex = 0;
@@ -28,6 +33,7 @@ class StringManipulate {
             }
             return parts;
         }
+        // Função para verificar se uma string é composta apenas por espaços em branco
         static bool whiteSpacesOnly(const string& line){
             if (line.empty()){
                 return true;

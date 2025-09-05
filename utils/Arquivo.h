@@ -10,6 +10,10 @@ using std::string;
 #include "StringManipulate.h"
 #include "AnalisadorLexico.h"
 #include <set>
+
+/**
+    Classe responsavel por manipular arquivos de entrada e saída.
+*/
 class Arquivo
 {
 private:
@@ -25,6 +29,12 @@ public:
     ~Arquivo();
 };
 
+/*
+    Construtor da classe Arquivo.
+    Recebe o nome do arquivo e um ponteiro para um objeto fstream.
+    Abre o arquivo para leitura.
+    Lança uma exceção se o arquivo não puder ser aberto.
+*/
 Arquivo::Arquivo(string &nomeArquivo, fstream *arquivo)
 {
     if (!arquivo)
@@ -36,13 +46,22 @@ Arquivo::Arquivo(string &nomeArquivo, fstream *arquivo)
     this->nomeArquivo = nomeArquivo;
 }
 
+/*
+    Destrutor da classe Arquivo.
+    Fecha o arquivo se estiver aberto e libera a memória alocada para o objeto fstream.
+*/
 Arquivo::~Arquivo()
 {
     this->fecharArquivo();
     delete this->arquivo;
     this->arquivo = NULL;
 }
-
+/*
+    Método para abrir um arquivo.
+    Recebe o nome do arquivo como parâmetro.
+    Abre o arquivo para leitura.
+    Lança uma exceção se o arquivo não puder ser aberto.
+*/
 void Arquivo::abrirArquivo(string &nomeArquivo)
 {
     this->arquivo->open(nomeArquivo, std::ios::in);
@@ -52,6 +71,12 @@ void Arquivo::abrirArquivo(string &nomeArquivo)
     }
 }
 
+/*
+    Método para ler o conteúdo do arquivo.
+    Retorna uma lista de listas de strings, onde cada lista interna representa uma linha do arquivo.
+    Remove comentários e linhas em branco do arquivo.
+    Lança uma exceção se ocorrer um erro durante a leitura do arquivo.
+*/
 std::list<std::list<string>> Arquivo::lerArquivo()
 {
     string fileContent;
@@ -120,6 +145,10 @@ std::list<std::list<string>> Arquivo::lerArquivo()
     return linhas;
 }
 
+/*
+    Método para fechar o arquivo.
+    Verifica se o arquivo está aberto e o fecha.
+*/
 void Arquivo::fecharArquivo()
 {
     if (this->arquivo && this->arquivo->is_open())
@@ -128,6 +157,12 @@ void Arquivo::fecharArquivo()
     }
 }
 
+/*
+    Método para escrever dados em um arquivo.
+    Recebe uma lista de listas de strings, onde cada lista interna representa uma linha a ser escrita no arquivo.
+    Escreve os dados no arquivo com a extensão ".o".
+    Lança uma exceção se ocorrer um erro ao tentar abrir o arquivo para escrita.
+*/
 void Arquivo::escreverArquivo(std::list<std::list<string>> &dados)
 {
     fstream arquivoEscrita;
@@ -136,7 +171,6 @@ void Arquivo::escreverArquivo(std::list<std::list<string>> &dados)
     {
         throw string("Erro ao tentar abrir arquivo para escrita\n");
     }
-    int indexLinha = 1;
     for (const std::list<string> linha : dados)
     {
         for (const string valor : linha)
@@ -144,7 +178,6 @@ void Arquivo::escreverArquivo(std::list<std::list<string>> &dados)
             arquivoEscrita << valor;
         }
         arquivoEscrita << std::endl;
-        indexLinha++;
     }
 }
 
