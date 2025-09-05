@@ -8,17 +8,18 @@ using std::string;
 
 class StringManipulate {
     public:
-        static std::list<string> trim(const string &str, const char &charToTrim){
+        static std::list<string> trim(const string &str, const char &charToTrim, const int& indexLine){
             std::list<string> parts;
             int lastIndex = 0;
-            for (int index = 0; index < str.length(); ++index){
-                if (str[index] == charToTrim){
-                    lastIndex = index;
-                    string part = "";
-                    for (int indexPart = lastIndex; indexPart < index; indexPart++){
+            for (int index = 0; index < (int) str.length(); ++index){
+                if (str[index] == charToTrim || index == (int) str.length() - 1){
+                    string part = "[";
+                    for (int indexPart = lastIndex; indexPart <= index; indexPart++){
                         part += str[indexPart];
                     }
+                    part += ","+ std::to_string(indexLine) + "]";
                     parts.push_back(part);
+                    lastIndex = index + 1;
                 }
             }
             return parts;
