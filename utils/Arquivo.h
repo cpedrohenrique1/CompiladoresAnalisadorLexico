@@ -8,7 +8,8 @@ using std::string;
 
 #include <list>
 #include "StringManipulate.h"
-
+#include "AnalisadorLexico.h"
+#include <set>
 class Arquivo
 {
 private:
@@ -61,31 +62,42 @@ std::list<std::list<string>> Arquivo::lerArquivo()
     while (getline(*this->arquivo, fileContent))
     {
         indexLine++;
-        std::list<string> trimmedString = StringManipulate::trim(fileContent, ' ', indexLine);
-
-        if (trimmedString.empty())
+        std::set<char> charSet(fileContent.begin(), fileContent.end());
+        if (StringManipulate::whiteSpacesOnly(fileContent))
         {
             continue;
         }
+        std::list<string> trimmedString;
 
-        if (!insideBlockComment && fileContent.find("/*") < fileContent.size())
+        if (!insideBlockComment && AnalisadorLexico::openBlockComment(fileContent))
         {
             insideBlockComment = true;
+            fileContent = fileContent.substr(0, AnalisadorLexico::reconhecerComentariosAbreBlocos(fileContent));
+            trimmedString = StringManipulate::trim(fileContent, ' ', indexLine);
+            linhas.push_back(trimmedString);
             continue;
         }
         if (insideBlockComment)
         {
-            if (fileContent.find("*/") < fileContent.size())
+            if (AnalisadorLexico::reconhecerComentariosFechaBlocos(fileContent) < fileContent.size())
             {
                 insideBlockComment = false;
+                fileContent = fileContent.substr(AnalisadorLexico::reconhecerComentariosFechaBlocos(fileContent), fileContent.size() - 1);
+                trimmedString = StringManipulate::trim(fileContent, ' ', indexLine);
+                linhas.push_back(trimmedString);
             }
             continue;
         }
 
-        if (fileContent.find("//") < fileContent.size())
+        if (AnalisadorLexico::reconhecerComentariosSimples(fileContent) < fileContent.size())
         {
+            fileContent = fileContent.substr(0, AnalisadorLexico::reconhecerComentariosSimples(fileContent));
+
+            trimmedString = StringManipulate::trim(fileContent, ' ', indexLine);
+            linhas.push_back(trimmedString);
             continue;
         }
+        trimmedString = StringManipulate::trim(fileContent, ' ', indexLine);
         linhas.push_back(trimmedString);
     }
 
