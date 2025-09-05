@@ -9,14 +9,15 @@ int main(int argc, char* argv[])
     try
     {
         string nomeArquivo;
-        if (argc == 1){
+        if (argc != 2){
             cout << "Escolha qual o arquivo a ser analisado: ";
             cin >> nomeArquivo;
         } else {
             nomeArquivo = argv[1];
         }
         Arquivo arquivo(nomeArquivo, new fstream());
-        arquivo.lerArquivo();
+        std::list<std::list<string>> linhas = arquivo.lerArquivo();
+        arquivo.escreverArquivo(linhas);
     } catch(string e){
         cout << e << endl;
     }
