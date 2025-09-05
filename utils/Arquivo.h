@@ -62,7 +62,6 @@ std::list<std::list<string>> Arquivo::lerArquivo()
     while (getline(*this->arquivo, fileContent))
     {
         indexLine++;
-        std::set<char> charSet(fileContent.begin(), fileContent.end());
         if (StringManipulate::whiteSpacesOnly(fileContent))
         {
             continue;
@@ -73,6 +72,10 @@ std::list<std::list<string>> Arquivo::lerArquivo()
         {
             insideBlockComment = true;
             fileContent = fileContent.substr(0, AnalisadorLexico::reconhecerComentariosAbreBlocos(fileContent));
+            if (fileContent.empty() || StringManipulate::whiteSpacesOnly(fileContent))
+            {
+                continue;
+            }
             trimmedString = StringManipulate::trim(fileContent, ' ', indexLine);
             linhas.push_back(trimmedString);
             continue;
@@ -82,7 +85,11 @@ std::list<std::list<string>> Arquivo::lerArquivo()
             if (AnalisadorLexico::reconhecerComentariosFechaBlocos(fileContent) < fileContent.size())
             {
                 insideBlockComment = false;
-                fileContent = fileContent.substr(AnalisadorLexico::reconhecerComentariosFechaBlocos(fileContent), fileContent.size() - 1);
+                fileContent = fileContent.substr(AnalisadorLexico::reconhecerComentariosFechaBlocos(fileContent) + 2, fileContent.size());
+                if (fileContent.empty() || StringManipulate::whiteSpacesOnly(fileContent))
+                {
+                    continue;
+                }
                 trimmedString = StringManipulate::trim(fileContent, ' ', indexLine);
                 linhas.push_back(trimmedString);
             }
@@ -96,6 +103,14 @@ std::list<std::list<string>> Arquivo::lerArquivo()
             trimmedString = StringManipulate::trim(fileContent, ' ', indexLine);
             linhas.push_back(trimmedString);
             continue;
+        }
+        if (AnalisadorLexico::openCloseBlockComment(fileContent))
+        {
+            fileContent = fileContent.substr(0, AnalisadorLexico::reconhecerComentariosAbreBlocos(fileContent)) + fileContent.substr(AnalisadorLexico::reconhecerComentariosFechaBlocos(fileContent) + 2, fileContent.size());
+            if (fileContent.empty() || StringManipulate::whiteSpacesOnly(fileContent))
+            {
+                continue;
+            }
         }
         trimmedString = StringManipulate::trim(fileContent, ' ', indexLine);
         linhas.push_back(trimmedString);
