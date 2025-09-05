@@ -5,6 +5,7 @@
 using std::string;
 #include <list>
 #include <string>
+#include <set>
 
 class StringManipulate {
     public:
@@ -14,8 +15,11 @@ class StringManipulate {
             for (int index = 0; index < (int) str.length(); ++index){
                 if (str[index] == charToTrim || index == (int) str.length() - 1){
                     string part = "[";
-                    for (int indexPart = lastIndex; indexPart <= index; indexPart++){
+                    for (int indexPart = lastIndex; indexPart < index; indexPart++){
                         part += str[indexPart];
+                    }
+                    if (index == (int) str.length() - 1 && str[index] != ' '){
+                        part += str[index];
                     }
                     part += ","+ std::to_string(indexLine) + "]";
                     parts.push_back(part);
@@ -23,6 +27,15 @@ class StringManipulate {
                 }
             }
             return parts;
+        }
+        static bool whiteSpacesOnly(const string& line){
+            if (line.empty()){
+                return true;
+            }
+            std::set<char> setString(line.begin(), line.end());
+            if (((setString.size() == 1) && (*setString.begin() == ' ')))
+                return true;
+            return false;
         }
 };
 
