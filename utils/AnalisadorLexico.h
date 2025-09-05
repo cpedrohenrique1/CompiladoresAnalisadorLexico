@@ -3,16 +3,25 @@
 
 #include <iostream>
 using std::string;
+#include "StringManipulate.h"
 
-class AnalisadorLexico{
-    private:
-
-    public:
-        int static reconhecerComentarios(string line);
+class AnalisadorLexico
+{
+public:
+    int static reconhecerComentariosSimples(string &line)
+    {
+        return line.find("//");
+    }
+    int static reconhecerComentariosAbreBlocos(string &line)
+    {
+        return line.find("/*");
+    }
+    int static reconhecerComentariosFechaBlocos(string& line){
+        return line.find("*/");
+    }
+    bool static openBlockComment(string& line){
+        return reconhecerComentariosAbreBlocos(line) < line.size() && !(reconhecerComentariosFechaBlocos(line) < line.size());
+    }
 };
-
-int AnalisadorLexico::reconhecerComentarios(string line){
-    return line.find("//");
-}
 
 #endif
