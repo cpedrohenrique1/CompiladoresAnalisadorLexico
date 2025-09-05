@@ -22,6 +22,9 @@ public:
     bool static openBlockComment(string& line){
         return reconhecerComentariosAbreBlocos(line) < line.size() && !(reconhecerComentariosFechaBlocos(line) < line.size());
     }
+    bool static openCloseBlockComment(string& line){
+        return reconhecerComentariosAbreBlocos(line) < line.size() && reconhecerComentariosFechaBlocos(line) < line.size();
+    }
 };
 
 #endif
