@@ -6,32 +6,33 @@
 using std::ifstream;
 using std::string;
 
-#include "AnalisadorLexico.h"
+#include <list>
+#include "StringManipulate.h"
 
 class Arquivo
 {
 private:
     fstream *arquivo;
-    AnalisadorLexico *analisadorLexico;
-    void abrirArquivo(string& nomeArquivo);
+    string nomeArquivo;
+    void abrirArquivo(string &nomeArquivo);
     void fecharArquivo();
-    void escreverNoArquivo(string& dados);
 
 public:
-    void lerArquivo();
-    Arquivo(string& nomeArquivo, fstream *arquivo);
+    void escreverArquivo(std::list<std::list<string>> &dados);
+    std::list<std::list<string>> lerArquivo();
+    Arquivo(string &nomeArquivo, fstream *arquivo);
     ~Arquivo();
 };
 
-Arquivo::Arquivo(string& nomeArquivo, fstream *arquivo)
+Arquivo::Arquivo(string &nomeArquivo, fstream *arquivo)
 {
     if (!arquivo)
     {
-        throw new string("Erro ao tentar abrir arquivo\n");
+        throw string("Erro ao tentar abrir arquivo\n");
     }
     this->arquivo = arquivo;
     this->abrirArquivo(nomeArquivo);
-    this->analisadorLexico = new AnalisadorLexico();
+    this->nomeArquivo = nomeArquivo;
 }
 
 Arquivo::~Arquivo()
@@ -39,29 +40,57 @@ Arquivo::~Arquivo()
     this->fecharArquivo();
     delete this->arquivo;
     this->arquivo = NULL;
-    delete this->analisadorLexico;
-    this->analisadorLexico = NULL;
 }
 
-void Arquivo::abrirArquivo(string& nomeArquivo)
+void Arquivo::abrirArquivo(string &nomeArquivo)
 {
     this->arquivo->open(nomeArquivo, std::ios::in);
     if (!this->arquivo->is_open())
     {
-        throw new string("Erro ao tentar abrir arquivo\n");
+        throw string("Erro ao tentar abrir arquivo\n");
     }
 }
 
-void Arquivo::lerArquivo()
+std::list<std::list<string>> Arquivo::lerArquivo()
 {
     string fileContent;
-    int lineNumber = 0;
+    std::list<std::list<string>> linhas;
+    bool insideBlockComment = false;
+    int indexLine = 0;
+
     while (getline(*this->arquivo, fileContent))
     {
-        lineNumber++;
-        std::cout << fileContent << lineNumber << std::endl;
+        indexLine++;
+        std::list<string> trimmedString = StringManipulate::trim(fileContent, ' ', indexLine);
+
+        if (trimmedString.empty())
+        {
+            continue;
+        }
+
+        if (!insideBlockComment && fileContent.find("/*") < fileContent.size())
+        {
+            insideBlockComment = true;
+            continue;
+        }
+        if (insideBlockComment)
+        {
+            if (fileContent.find("*/") < fileContent.size())
+            {
+                insideBlockComment = false;
+            }
+            continue;
+        }
+
+        if (fileContent.find("//") < fileContent.size())
+        {
+            continue;
+        }
+        linhas.push_back(trimmedString);
     }
+
     this->fecharArquivo();
+    return linhas;
 }
 
 void Arquivo::fecharArquivo()
@@ -69,6 +98,26 @@ void Arquivo::fecharArquivo()
     if (this->arquivo && this->arquivo->is_open())
     {
         this->arquivo->close();
+    }
+}
+
+void Arquivo::escreverArquivo(std::list<std::list<string>> &dados)
+{
+    fstream arquivoEscrita;
+    arquivoEscrita.open(this->nomeArquivo + ".o", std::ios::out);
+    if (!arquivoEscrita.is_open())
+    {
+        throw string("Erro ao tentar abrir arquivo para escrita\n");
+    }
+    int indexLinha = 1;
+    for (const std::list<string> linha : dados)
+    {
+        for (const string valor : linha)
+        {
+            arquivoEscrita << valor;
+        }
+        arquivoEscrita << std::endl;
+        indexLinha++;
     }
 }
 
